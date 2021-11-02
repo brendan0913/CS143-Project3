@@ -1,1 +1,2 @@
-# CS143-Project3Data conversion project for CS143
+# CS143-Project3
+Data conversion project for CS143
