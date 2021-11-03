@@ -109,9 +109,6 @@ data.laureates.forEach(laureate => {
         city: bCity,
         country: bCountry
     });
-
-    // line break
-    // console.log();
 });
 
 // Iterate through laureates (lr) to get tables: Laureate, Person, Organization, Birth
@@ -128,7 +125,7 @@ lr.forEach(l => {
 
         // console.log(pr[index].lid + "\t" + pr[index].givenName + (pr[index].familyName ? ("\t" + pr[index].familyName) : ""));
     } else {
-        
+
         // console.log(or[index].lid + "\t" + or[index].orgName);
     }
 });
