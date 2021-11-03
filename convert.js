@@ -5,11 +5,22 @@ const fs = require('fs');
 let file = fs.readFileSync("./data/nobel-laureates.json");
 let data = JSON.parse(file)
 
-// get the id, givenName, and familyName of the first laureate
-let laureate = data.laureates[0];
-let id = laureate.id;
-let givenName = laureate.givenName.en;
-let familyName = laureate.familyName.en;
+.laureates.forEach(laureate => {
+    // get the id, givenName, and familyName of the laureate
+    let id = laureate.id;
+    if (laureate.givenName) {
+        let givenName = laureate.givenName.en;
+        let familyName = laureate.familyName ? laureate.familyName.en : null;
 
-// print the extracted information
-console.log(id + "\t" + givenName + "\t" + familyName);
+        // print the extracted information
+        console.log(id + "\t" + givenName + (familyName ? ("\t" + familyName) : null));
+    } else if (laureate.orgName) {
+        let orgName = laureate.orgName.en;
+
+        // print the extracted information
+        console.log(id + "\t" + orgName);
+    } else {
+        console.log("WTF did you do?");
+        return;
+    }
+});
