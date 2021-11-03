@@ -3,9 +3,9 @@ const fs = require('fs');
 
 // load JSON data
 let file = fs.readFileSync("./data/nobel-laureates.json");
-let data = JSON.parse(file)
+let data = JSON.parse(file);
 
-.laureates.forEach(laureate => {
+data.laureates.forEach(laureate => {
     // get the id, givenName, and familyName of the laureate
     let id = laureate.id;
     let person = laureate.givenName ? true : false;
@@ -26,20 +26,31 @@ let data = JSON.parse(file)
     let birthDate, birthCity, birthCountry;
     if (person && laureate.birth) {
         birthDate = laureate.birth.date;
-        if (laureate.birth.place.city) {
-            birthCity = laureate.birth.place.city.en;
-        }
-        if (laureate.birth.place.country) {
-            birthCountry = laureate.birth.place.country.en;
-        }
+        birthCity = laureate.birth.place.city ? laureate.birth.place.city.en : null;
+        birthCountry = laureate.birth.place.country ? laureate.birth.place.country.en : null;
     } else if (laureate.founded) {
         birthDate = laureate.founded.date;
-        if (laureate.founded.place.city) {
-            birthCity = laureate.founded.place.city.en;
-        }
-        if (laureate.founded.place.country) {
-            birthCountry = laureate.founded.place.country.en;
-        }
+        birthCity = laureate.founded.place.city ? laureate.founded.place.city.en : null;
+        birthCountry = laureate.founded.place.country ? laureate.founded.place.country.en : null;
     }
     console.log((birthDate ? (birthDate + "\t") : null) + (birthCity ? (birthCity + "\t") : null) + (birthCountry ?? null));
+
+    // get the nobel prize information
+    laureate.nobelPrizes.forEach(prize => {
+        let awardYear = prize.awardYear;
+        let category = prize.category.en;
+        console.log(awardYear + "\t" + category);
+
+        if (prize.affiliations) {
+            prize.affiliations.forEach(affl => {
+                let afflName = affl.name.en;
+                let afflCity = affl.city ? affl.city.en : null;
+                let afflCountry = affl.country ? affl.country.en : null;
+                console.log(afflName + "\t" + (afflCity ? (afflCity + "\t") : null) + (afflCountry ?? null));
+            });
+        }
+    });
+
+    // line break
+    console.log();
 });
