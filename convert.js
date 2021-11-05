@@ -2,7 +2,7 @@
 const fs = require('fs');
 
 // load JSON data
-let file = fs.readFileSync("./data/nobel-laureates.json");
+let file = fs.readFileSync("/home/cs143/data/nobel-laureates.json");
 let data = JSON.parse(file);
 
 // ID variables
