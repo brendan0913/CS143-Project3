@@ -122,9 +122,6 @@ lr.forEach(l => {
             input += l.lid + "|" + l.nids[i] + "\n"
         }
     }
-    // input += l.lid + "|" + l.nids.join("|") + "\n"
-    // ^^ puts it all on one line (there are 955 laureates but 962 rows in
-    // Laureate since some of them got multiple prizes)
 });
 fs.writeFile('Laureate.del', input, (err) => {
     if (err) throw err;
@@ -209,20 +206,3 @@ fs.writeFile('Affiliation.del', input, (err) => {
     if (err) throw err;
 })
 
-// Iterate through laureates (lr) to get tables: Laureate, Person, Birth
-// console.log(pr);
-// lr.forEach(l => {
-//     let index = pr.findIndex(e => e.lid === l.lid)
-//     if (index === -1) {
-//         index = or.findIndex(e => e.lid === l.lid);
-//     }
-//     let person = (pr[index] && pr[index].lid === l.lid) ? true : false;
-
-//     // Some logging to show how to access elements
-//     if (person) {
-//         // console.log(pr[index].lid + "\t" + pr[index].givenName + (pr[index].familyName ? ("\t" + pr[index].familyName) : ""));
-//     } 
-//     // else {
-//     //     console.log(or[index].lid + "\t" + or[index].orgName);
-//     // }
-// });
