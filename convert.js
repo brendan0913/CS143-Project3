@@ -112,7 +112,7 @@ data.laureates.forEach(laureate => {
 });
 
 // Fill Laureate.del file
-// Laureate(lid, nids)
+// Laureate(lid, nid)
 input = ''
 lr.forEach(l => {
     if (l.nids.length === 1){
@@ -168,7 +168,7 @@ fs.writeFile('Birth.del', input, (err) => {
 })
 
 // Fill Prize.del file
-// Prize(nid, awardYear, category, sortOrder, affilIds)
+// Prize(nid, awardYear, category, sortOrder, affilId)
 input = ''
 nb.forEach(p => {
     let l = p.nid

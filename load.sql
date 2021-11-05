@@ -5,11 +5,11 @@ DROP TABLE IF EXISTS Organization;
 DROP TABLE IF EXISTS Affiliation;
 DROP TABLE IF EXISTS Prize;
 
--- Laureate(lid, nids)
+-- Laureate(lid, nid)
 -- Person(lid, givenName, familyName, gender)
 -- Organization(lid, orgName)
 -- Birth(lid, date, city, country) // Also used for organization foundings
--- Prize(nid, awardYear, category, sortOrder, affilIds)
+-- Prize(nid, awardYear, category, sortOrder, affilId)
 -- Affiliation(affilId, name, city, country)
 
 CREATE TABLE Laureate(lid INT NOT NULL,
