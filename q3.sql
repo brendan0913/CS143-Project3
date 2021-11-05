@@ -5,3 +5,4 @@
 -- - Prize(nid, awardYear, category, sortOrder, affilIds)
 -- - Affiliation(affilId, name, city, country)
 
+SELECT familyName FROM Laureate L, Person P WHERE P.lid = L.lid GROUP BY familyName HAVING COUNT(*) >= 5;
