@@ -8,78 +8,123 @@
 
     /*
     Send the following fake JSON as the result
-    {  "id": $id,
-        "givenName": { "en": "A. Michael" },
-        "familyName": { "en": "Spencer" },
-        "affiliations": [ "UCLA", "White House" ]
-    }
+        {
+            "id":"745",
+            "givenName":{ "en":"A. Michael" },
+            "familyName":{ "en":"Spence" },
+            "gender":"male",
+            "birth":{
+                "date":"1943-00-00",
+                "place":{
+                    "city":{ "en":"Montclair, NJ" },
+                    "country":{ "en":"USA" }
+                }
+            },
+            "nobelPrizes":[{
+                "awardYear":"2001",
+                "category":{ "en":"Economic Sciences" },
+                "sortOrder":"2",
+                "affiliations":[{
+                    "name":{ "en":"Stanford University" },
+                    "city":{ "en":"Stanford, CA" },
+                    "country":{ "en":"USA" }
+                }]
+            }]
+        }
     */
 
     $db = new mysqli('localhost', 'cs143', '', 'class_db');
-    if ($db->connect_errno > 0) die('Unable to connect to database [' . $db->connect_error . ']');
+    if ($db->connect_errno > 0) 
+        die('Unable to connect to database [' . $db->connect_error . ']');
 
-    $query = "SELECT * FROM Person WHERE lid = $id";
-    $rs = $db->query($query);
-    while ($row = $rs->fetch_assoc()) { 
-        $givenName = $row['givenName']; 
-        $familyName = $row['familyName'];
-        $gender = $row['gender']; 
-        print "Name: $givenName $familyName Sex: $gender\n"; 
-    }
-    $rs->free();
+    $is_org = True;
 
     $query = "SELECT * FROM Organization WHERE lid = $id";
     $rs = $db->query($query);
     while ($row = $rs->fetch_assoc()) { 
-        $orgName = $row['orgName'];
-        print "Name: $orgName\n"; 
+        $name = $row['orgName']; 
     }
     $rs->free();
+
+    if (is_null($name)){
+        $is_org = False;
+        $query = "SELECT * FROM Person WHERE lid = $id";
+        $rs = $db->query($query);
+        while ($row = $rs->fetch_assoc()) { 
+            $first = $row['givenName']; 
+            $last = $row['familyName'];
+            $gender = $row['gender']; 
+        }
+        $rs->free();
+    }
 
     $query = "SELECT * FROM Birth WHERE lid = $id";
     $rs = $db->query($query);
     while ($row = $rs->fetch_assoc()) { 
-        $birthDate = $row['date'];
-        $birthCity = $row['city'];
-        $birthCountry = $row['country'];
-        print "BirthDate: $birthDate BirthCity: $birthCity BirthCountry: $birthCountry\n"; 
+        $date = $row['date']; 
+        $city = $row['city'];
+        $country = $row['country']; 
     }
     $rs->free();
 
-    $query = "SELECT * FROM Prize WHERE nid IN(SELECT nid FROM Laureate L WHERE lid = $id)";
-    $rs = $db->query($query);
-    while ($row = $rs->fetch_assoc()) { 
-        $awardYear = $row['awardYear'];
-        $category = $row['category'];
-        $sortOrder = $row['sortOrder'];
-        $affilId = $row['affilId'];
-        print "AwardYear: $awardYear Category: $category SortOrder: $sortOrder AffilId: $affilId\n"; 
+    if ($is_org){
+        $output = (object) [
+            "id" => strval($id),
+            "orgName" => $name,
+            "founded" => (object) [
+                "date" => $date,
+                "place" => (object) [
+                    "city" => (object) [
+                        "en" => $city
+                    ],
+                    "country" => (object) [
+                        "en" => $country
+                    ]
+                ]
+            ]
+            // "nobelPrizes" => array(
+            //     (object) [
+        
+            //     ]
+            // )
+            // "affliations" => array(
+            //     "UCLA",
+            //     "White House"
+            // )
+        ];
     }
-    $rs->free();
-
-    $query = "SELECT * FROM Affiliation WHERE affilId = $affilId";
-    $rs = $db->query($query);
-    while ($row = $rs->fetch_assoc()) { 
-        $affilName = $row['name'];
-        $affilCity = $row['city'];
-        $affilCountry = $row['country'];
-        print "AffiliationName: $affilName City: $affilCity Country: $affilCountry\n"; 
+    else {
+        $output = (object) [
+            "id" => strval($id),
+            "givenName" => (object) [
+                "en" => $first
+            ],
+            "familyName" => (object) [
+                "en" => $last
+            ],
+            "gender" => $gender,
+            "birth" => (object) [
+                "date" => $date,
+                "place" => (object) [
+                    "city" => (object) [
+                        "en" => $city
+                    ],
+                    "country" => (object) [
+                        "en" => $country
+                    ]
+                ]
+            ]
+            // "nobelPrizes" => array(
+            //     (object) [
+        
+            //     ]
+            // )
+            // "affliations" => array(
+            //     "UCLA",
+            //     "White House"
+            // )
+        ];
     }
-    $rs->free();
 
-    $output = (object) [
-        "id" => strval($id),
-        "givenName" => (object) [
-            "en" => "A. Michael"
-        ],
-        "familyName" => (object) [
-            "en" => "Spencer"
-        ],
-        "affliations" => array(
-            "UCLA",
-            "White House"
-        )
-    ];
     echo json_encode($output);
-
 ?>
