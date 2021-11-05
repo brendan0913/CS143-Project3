@@ -34,16 +34,29 @@ header('Content-Type: application/json');
 */
 
 $db = new mysqli('localhost', 'cs143', '', 'class_db');
-if ($db->connect_errno > 0) die('Unable to connect to database [' . $db->connect_error . ']');
+if ($db->connect_errno > 0) 
+    die('Unable to connect to database [' . $db->connect_error . ']');
 
-$query = "SELECT * FROM Person WHERE lid = $id";
+$is_org = True;
+
+$query = "SELECT * FROM Organization WHERE lid = $id";
 $rs = $db->query($query);
 while ($row = $rs->fetch_assoc()) { 
-    $first = $row['givenName']; 
-    $last = $row['familyName'];
-    $gender = $row['gender']; 
+    $name = $row['orgName']; 
 }
 $rs->free();
+
+if (is_null($name)){
+    $is_org = False;
+    $query = "SELECT * FROM Person WHERE lid = $id";
+    $rs = $db->query($query);
+    while ($row = $rs->fetch_assoc()) { 
+        $first = $row['givenName']; 
+        $last = $row['familyName'];
+        $gender = $row['gender']; 
+    }
+    $rs->free();
+}
 
 $query = "SELECT * FROM Birth WHERE lid = $id";
 $rs = $db->query($query);
@@ -54,36 +67,65 @@ while ($row = $rs->fetch_assoc()) {
 }
 $rs->free();
 
-$output = (object) [
-    "id" => strval($id),
-    "givenName" => (object) [
-        "en" => $first
-    ],
-    "familyName" => (object) [
-        "en" => $last
-    ],
-    "gender" => $gender,
-    "birth" => (object) [
-        "date" => $date,
-        "place" => (object) [
-            "city" => (object) [
-                "en" => $city
-            ],
-            "country" => (object) [
-                "en" => $country
+if ($is_org){
+    $output = (object) [
+        "id" => strval($id),
+        "orgName" => $name,
+        "founded" => (object) [
+            "date" => $date,
+            "place" => (object) [
+                "city" => (object) [
+                    "en" => $city
+                ],
+                "country" => (object) [
+                    "en" => $country
+                ]
             ]
         ]
-    ]
-    // "nobelPrizes" => array(
-    //     (object) [
+        // "nobelPrizes" => array(
+        //     (object) [
+    
+        //     ]
+        // )
+        // "affliations" => array(
+        //     "UCLA",
+        //     "White House"
+        // )
+    ];
+}
+else {
+    $output = (object) [
+        "id" => strval($id),
+        "givenName" => (object) [
+            "en" => $first
+        ],
+        "familyName" => (object) [
+            "en" => $last
+        ],
+        "gender" => $gender,
+        "birth" => (object) [
+            "date" => $date,
+            "place" => (object) [
+                "city" => (object) [
+                    "en" => $city
+                ],
+                "country" => (object) [
+                    "en" => $country
+                ]
+            ]
+        ]
+        // "nobelPrizes" => array(
+        //     (object) [
+    
+        //     ]
+        // )
+        // "affliations" => array(
+        //     "UCLA",
+        //     "White House"
+        // )
+    ];
+}
 
-    //     ]
-    // )
-    // "affliations" => array(
-    //     "UCLA",
-    //     "White House"
-    // )
-];
 echo json_encode($output);
 
 ?>
