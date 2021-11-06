@@ -91,6 +91,7 @@
         $founded["place"] = $place;
         $founded = (object) $founded;
     }
+
     $nobelPrizes = array();
     $prize_ids = array();
     $query = "SELECT nid FROM Laureate WHERE lid = $id";
@@ -106,16 +107,52 @@
             $cat = (object) [ "en" => $row['category']];
             $sortOrder = $row['sortOrder']; 
         }
-        $rs->free();
         $prizeInfo = array();
         $prizeInfo["awardYear"] = $awardYear;
         $prizeInfo["category"] = $cat;
         $prizeInfo["sortOrder"] = $sortOrder;
+
+        $aids = array();
+        $query = "SELECT affilId FROM Prize WHERE nid = $nid";
+        $rs = $db->query($query);
+        while ($row = $rs->fetch_array()){
+            $aids[] = $row[0];
+        }
+        $rs->free();
+        $affils = array();
+        if (!is_null($aids[0])){
+            foreach($aids as $aid){
+                $query = "SELECT * FROM Affiliation WHERE affilId = $aid";
+                $rs = $db->query($query);
+                while ($row = $rs->fetch_assoc()){
+                    $name = (object) [ "en" => $row['name']];
+                    $has_city = False;
+                    $has_country = False;
+                    if (!is_null($row['city'])){
+                        $city = (object) [ "en" => $row['city']];
+                        $has_city = True;
+                    }
+                    if (!is_null($row['country'])){
+                        $country = (object) [ "en" => $row['country']];
+                        $has_country = True;
+                    }
+                }
+                $affilInfo = array();
+                $affilInfo["name"] = $name;
+                if ($has_city){
+                    $affilInfo["city"] = $city;
+                }
+                if ($has_country){
+                    $affilInfo["country"] = $country;
+                }
+                $rs->free();
+                array_push($affils, $affilInfo);
+            }
+            $prizeInfo["affiliations"] = $affils;
+        }
         $prizeInfo = (object) $prizeInfo;
         array_push($nobelPrizes, $prizeInfo);
     }
-    
-
 
     if ($is_org){
         $output = array("id" => strval($id), "orgName" => $name);
