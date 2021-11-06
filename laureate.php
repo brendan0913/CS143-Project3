@@ -155,7 +155,7 @@
     }
 
     if ($is_org){
-        $output = array("id" => strval($id), "orgName" => $name);
+        $output = array("id" => strval($id), "orgName" => (object) ["en" => $name]);
         if ($has_founded){
             $output["founded"] = $founded;
         }
@@ -165,10 +165,10 @@
     else {
         $output = array("id" => strval($id));
         if (!is_null($first)){
-            $output["givenName"] = $first;
+            $output["givenName"] = (object) ["en" => $first];
         }
         if (!is_null($last)){
-            $output["familyName"] = $last;
+            $output["familyName"] = (object) ["en" => $last];
         }
         if ($has_founded){
             $output["birth"] = $founded;
