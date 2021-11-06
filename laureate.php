@@ -170,6 +170,9 @@
         if (!is_null($last)){
             $output["familyName"] = (object) ["en" => $last];
         }
+        if (!is_null($gender)){
+            $output["gender"] = $gender;
+        }
         if ($has_founded){
             $output["birth"] = $founded;
         }
