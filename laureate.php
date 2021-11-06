@@ -91,11 +91,38 @@
         $founded["place"] = $place;
         $founded = (object) $founded;
     }
+    $nobelPrizes = array();
+    $prize_ids = array();
+    $query = "SELECT nid FROM Laureate WHERE lid = $id";
+    $rs = $db->query($query);
+    while ($row = $rs->fetch_array()){
+        $prize_ids[] = $row[0];
+    }
+    foreach($prize_ids as $nid){
+        $query = "SELECT * FROM Prize WHERE nid = $nid";
+        $rs = $db->query($query);
+        while ($row = $rs->fetch_assoc()) { 
+            $awardYear = $row['awardYear']; 
+            $cat = (object) [ "en" => $row['category']];
+            $sortOrder = $row['sortOrder']; 
+        }
+        $rs->free();
+        $prizeInfo = array();
+        $prizeInfo["awardYear"] = $awardYear;
+        $prizeInfo["category"] = $cat;
+        $prizeInfo["sortOrder"] = $sortOrder;
+        $prizeInfo = (object) $prizeInfo;
+        array_push($nobelPrizes, $prizeInfo);
+    }
+    
+
+
     if ($is_org){
         $output = array("id" => strval($id), "orgName" => $name);
         if ($has_founded){
             $output["founded"] = $founded;
         }
+        $output["nobelPrizes"] = $nobelPrizes;
         $output = (object) $output;
     }
     else {
@@ -109,6 +136,7 @@
         if ($has_founded){
             $output["birth"] = $founded;
         }
+        $output["nobelPrizes"] = $nobelPrizes;
         $output = (object) $output;
     }
     echo json_encode($output);
