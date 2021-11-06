@@ -67,64 +67,49 @@
     }
     $rs->free();
 
+    $has_founded = False;
+    $has_place = False;
+    $has_date = False;
+    if (!is_null($city) || !is_null($country) || !is_null($date)){
+        $founded = array();
+        $has_founded = True;
+    }
+    if (!is_null($date)){
+        $has_date = True;
+        $founded["date"] = $date;
+    }
+    if (!is_null($city) || !is_null($country)){
+        $has_place = True;
+        $place = array();
+        if (!is_null($city)){
+            $place["city"] = (object) ["en" => $city];
+        }
+        if (!is_null($country)){
+            $place["country"] = (object) ["en" => $country];
+        }
+        $place = (object) $place;
+        $founded["place"] = $place;
+        $founded = (object) $founded;
+    }
     if ($is_org){
-        $output = (object) [
-            "id" => strval($id),
-            "orgName" => $name,
-            "founded" => (object) [
-                "date" => $date,
-                "place" => (object) [
-                    "city" => (object) [
-                        "en" => $city
-                    ],
-                    "country" => (object) [
-                        "en" => $country
-                    ]
-                ]
-            ]
-            // "nobelPrizes" => array(
-            //     (object) [
-        
-            //     ]
-            // )
-            // "affliations" => array(
-            //     "UCLA",
-            //     "White House"
-            // )
-        ];
+        $output = array("id" => strval($id), "orgName" => $name);
+        if ($has_founded){
+            $output["founded"] = $founded;
+        }
+        $output = (object) $output;
     }
     else {
-        $output = (object) [
-            "id" => strval($id),
-            "givenName" => (object) [
-                "en" => $first
-            ],
-            "familyName" => (object) [
-                "en" => $last
-            ],
-            "gender" => $gender,
-            "birth" => (object) [
-                "date" => $date,
-                "place" => (object) [
-                    "city" => (object) [
-                        "en" => $city
-                    ],
-                    "country" => (object) [
-                        "en" => $country
-                    ]
-                ]
-            ]
-            // "nobelPrizes" => array(
-            //     (object) [
-        
-            //     ]
-            // )
-            // "affliations" => array(
-            //     "UCLA",
-            //     "White House"
-            // )
-        ];
+        $output = array("id" => strval($id));
+        if (!is_null($first)){
+            $output["givenName"] = $first;
+        }
+        if (!is_null($last)){
+            $output["familyName"] = $last;
+        }
+        if ($has_founded){
+            $output["birth"] = $founded;
+        }
+        $output = (object) $output;
     }
-
     echo json_encode($output);
 ?>
